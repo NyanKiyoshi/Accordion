@@ -7,6 +7,7 @@
  * @license http://www.snyderplace.com/accordion/license.txt New BSD
  * @version 1.1
  */
+
 (function($) {
     $.fn.accordion = function(options) {
 
@@ -15,8 +16,34 @@
             return this;
         }
 
+        //address command requests
+        if (typeof options == 'string') {
+            return $.fn.accordion.dispatcher[options](this);
+        }
+
         initialize(this, options);
 
+    };
+
+    //create the command dispatcher
+    $.fn.accordion.dispatcher = {
+        //toggle the element's display
+        toggle: function(obj) {
+            toggle(obj, loadOpts(obj));
+            return obj;
+        },
+
+        //show the element
+        open: function(obj) {
+            open(obj, loadOpts(obj));
+            return obj;
+        },
+
+        //hide the element
+        close: function(obj) {
+            close(obj, loadOpts(obj));
+            return obj;
+        }
     };
 
     //create the initial accordion
@@ -112,7 +139,7 @@
         }
 
         return obj;
-    };
+    }
 
     //load opts from object
     function loadOpts($this) {
@@ -207,14 +234,10 @@
         }
 
         //unescape it
-        cookie = unescape($.cookie(opts.cookieName));
+        cookie = decodeURI($.cookie(opts.cookieName));
 
         //is this value in the cookie arrray
-        if (cookie != value) { //no, quit here
-            return false;
-        }
-
-        return true;
+        return cookie == value;
     }
 
     //check if a cookie is set
@@ -226,11 +249,7 @@
         }
 
         //is the cookie set
-        if ($.cookie(opts.cookieName) == null) { //no, quit here
-            return false;
-        }
-
-        return true;
+        return $.cookie(opts.cookieName) != null;
     }
 
     // settings
